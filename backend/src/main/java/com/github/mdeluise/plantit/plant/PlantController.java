@@ -94,4 +94,12 @@ public class PlantController {
     public ResponseEntity<Boolean> isNameAlreadyExisting(@PathVariable String plantName) {
         return ResponseEntity.ok(plantService.isNameAlreadyExisting(plantName));
     }
+    
+    @PostMapping("/identify")
+    @Operation(summary = "Identify a plant", description = "Identify a plant.")
+    public ResponseEntity<PlantDTO> identify(@RequestBody PlantDTO plantDTO) {
+        final PlantDTO result =
+            plantDTOConverter.convertToDTO(plantService.identify(plantDTOConverter.convertFromDTO(plantDTO)));
+        return ResponseEntity.ok(result);
+    }
 }

@@ -18,12 +18,14 @@ import com.github.mdeluise.plantit.exception.UnauthorizedException;
 import com.github.mdeluise.plantit.image.PlantImage;
 import com.github.mdeluise.plantit.image.PlantImageRepository;
 import com.github.mdeluise.plantit.image.storage.ImageStorageService;
+import com.github.mdeluise.plantit.plantinfo.plantnet.PlantNetRequestMaker;
 import jakarta.transaction.Transactional;
 
 @Service
 public class PlantService {
     private final AuthenticatedUserService authenticatedUserService;
     private final PlantRepository plantRepository;
+    private final PlantNetRequestMaker plantNetRequestMaker;
     private final BotanicalInfoService botanicalInfoService;
     private final ImageStorageService imageStorageService;
     private final PlantImageRepository plantImageRepository;
@@ -33,12 +35,13 @@ public class PlantService {
     @Autowired
     public PlantService(AuthenticatedUserService authenticatedUserService, PlantRepository plantRepository,
                         BotanicalInfoService botanicalInfoService, ImageStorageService imageStorageService,
-                        PlantImageRepository plantImageRepository) {
+                        PlantImageRepository plantImageRepository, PlantNetRequestMaker plantNetRequestMaker) {
         this.authenticatedUserService = authenticatedUserService;
         this.plantRepository = plantRepository;
         this.botanicalInfoService = botanicalInfoService;
         this.imageStorageService = imageStorageService;
         this.plantImageRepository = plantImageRepository;
+        this.plantNetRequestMaker = plantNetRequestMaker;
     }
 
 
@@ -177,5 +180,10 @@ public class PlantService {
     public Plant getInternal(String name) {
         return plantRepository.findByInfoPersonalName(name)
                               .orElseThrow(() -> new ResourceNotFoundException("name", name));
+    }
+    
+    public Plant identify() {
+        final User authenticatedUser = authenticatedUserService.getAuthenticatedUser();
+        return plantRepository.identify();
     }
 }
